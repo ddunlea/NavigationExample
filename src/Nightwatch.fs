@@ -1,27 +1,37 @@
 module Nightwatch
 
-open System
 open Elmish
 open Elmish.React
 open Elmish.ReactNative
 open Elmish.HMR
-open Fable.Core.JsInterop
+open Fable.Helpers.ReactNative
+open Fable.Helpers.ReactNative.Props
 
-let setupBackHandler dispatch =    
-    let backHandler () =
-        dispatch App.Msg.NavigateBack
-        true
+type Msg =
+| Noop
 
-    Fable.Helpers.ReactNative.setOnHardwareBackPressHandler backHandler
+type Model =
+| BlankModel
+
+let update (_:Msg) model : Model*Cmd<Msg> = 
+  model, Cmd.none
+
+let init() =
+  BlankModel, Cmd.none
+
+let view (model:Model) (dispatch: Msg -> unit) =
+  match model with
+  | BlankModel -> 
+    text [
+      TextProperties.Style [
+        FontSize 20.
+        FontWeight FontWeight.Bold
+        Margin 20.
+      ]
+    ] "Hello World"
 
 
-let subscribe (model:App.Model) =
-    Cmd.batch [
-        Cmd.ofSub setupBackHandler ]
-
-
-Program.mkProgram App.init App.update App.view
-|> Program.withSubscription subscribe
+Program.mkProgram init update view
 #if RELEASE
 #else
 |> Program.withConsoleTrace
